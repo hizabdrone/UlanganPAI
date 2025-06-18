@@ -1,19 +1,63 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Admin Ulangan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial; padding: 20px; }
-    input, button, select { margin: 8px 0; width: 100%; padding: 10px; }
-    .output { margin-top: 20px; word-break: break-word; background: #f0f0f0; padding: 10px; }
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background: #f9f9f9;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 16px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      font-size: 1rem;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e9e9e9;
+      border: 1px solid #ccc;
+    }
+
+    .output input {
+      width: calc(100% - 100px);
+      display: inline-block;
+    }
+
+    .output button {
+      width: 80px;
+      display: inline-block;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
-  <h2>Admin Panel Ulangan</h2>
-  <label>Link Embed Google Form (ambil dari "Embed HTML"):</label>
-  <textarea id="embed" rows="4"></textarea>
+  <h2>Panel Guru - Atur Ulangan</h2>
+
+  <label>Link Embed Google Form:</label>
+  <textarea id="embed" rows="4" placeholder='Contoh: &lt;iframe src="..."&gt;&lt;/iframe&gt;'></textarea>
 
   <label>Waktu Ujian (menit):</label>
   <input type="number" id="time" value="30">
@@ -21,15 +65,15 @@
   <label>Token Akses:</label>
   <input type="text" id="token" value="PAIUH1">
 
-  <label>Penalti Saat Buka Tab/Aplikasi Lain (menit):</label>
+  <label>Penalti Saat Keluar Tab/Aplikasi (menit):</label>
   <input type="number" id="penalti" value="5">
 
   <button onclick="generateLink()">Hasilkan Link Ujian</button>
 
   <div class="output">
-    <strong>Link untuk Siswa:</strong><br>
+    <label>Link untuk siswa:</label>
     <input type="text" id="linkOutput" readonly>
-    <button onclick="salin()">Salin Link</button>
+    <button onclick="salin()">Salin</button>
   </div>
 
   <script>
@@ -37,7 +81,7 @@
       const embed = document.getElementById("embed").value;
       const match = embed.match(/src="([^"]+)"/);
       if (!match) {
-        alert("Embed code tidak valid!");
+        alert("Kode embed Google Form tidak valid!");
         return;
       }
       const src = encodeURIComponent(match[1]);
@@ -51,9 +95,8 @@
     function salin() {
       const copyText = document.getElementById("linkOutput");
       copyText.select();
-      copyText.setSelectionRange(0, 99999);
       document.execCommand("copy");
-      alert("Link disalin!");
+      alert("Link disalin ke clipboard!");
     }
   </script>
 </body>
