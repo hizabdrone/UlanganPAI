@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ujian Siswa</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    .timer {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: #222;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      z-index: 1000;
+    }
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+    #overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); color: white;
+      display: none; justify-content: center; align-items: center;
+      font-size: 24px; z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <div class="timer" id="waktu"></div>
+  <iframe id="formFrame"></iframe>
+  <div id="overlay">Tindakan tidak diperbolehkan!</div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const formLink = urlParams.get("form");
+    const durasi = parseInt(urlParams.get("time"));
+    const token = urlParams.get("token");
+    const penalti = parseInt(urlParams.get("penalti") || "0");
+
+    let waktuTersisa = durasi * 60;
+    let dikunci = false;
+
+    function tampilkanWaktu() {
+      const menit = Math.floor(waktuTersisa / 60);
+      const detik = waktuTersisa % 60;
+      document.getElementById("waktu").innerText = `Sisa waktu: ${menit}:${detik.toString().padStart(2, "0")}`;
+    }
+
+    function kunciUjian(pesan) {
+      dikunci = true;
+      document.getElementById("formFrame").remove();
+      document.getElementById("waktu").innerText = pesan;
+    }
+
+    function mulaiUjian() {
+      if (!formLink || !durasi || !token) {
+        document.body.innerHTML = "<p>Parameter tidak lengkap.</p>";
+        return;
+      }
+
+      tampilkanWaktu();
+      setInterval(() => {
+        if (!dikunci) {
+          waktuTersisa--;
+          tampilkanWaktu();
+          if (waktuTersisa <= 0) {
+            kunciUjian("Waktu ujian telah habis.");
+          }
+        }
+      }, 1000);
+
+      document.getElementById("formFrame").src = formLink;
+    }
+
+    window.onblur = () => {
+      if (!dikunci) {
+        waktuTersisa -= penalti * 60;
+        alert("Terdeteksi berpindah tab/aplikasi. Waktu dikurangi " + penalti + " menit.");
+        if (waktuTersisa <= 0) {
+          kunciUjian("Anda terlalu sering berpindah tab. Ujian dikunci.");
+        }
+      }
+    };
+
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "PrintScreen") {
+        document.getElementById("overlay").style.display = "flex";
+        setTimeout(() => document.getElementById("overlay").style.display = "none", 2000);
+      }
+    });
+
+    window.onload = mulaiUjian;
+  </script>
+</body>
+</html>

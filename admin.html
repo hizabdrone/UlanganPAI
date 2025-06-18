@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Ulangan</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button, select { margin: 8px 0; width: 100%; padding: 10px; }
+    .output { margin-top: 20px; word-break: break-word; background: #f0f0f0; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Admin Panel Ulangan</h2>
+  <label>Link Embed Google Form (ambil dari "Embed HTML"):</label>
+  <textarea id="embed" rows="4"></textarea>
+
+  <label>Waktu Ujian (menit):</label>
+  <input type="number" id="time" value="30">
+
+  <label>Token Akses:</label>
+  <input type="text" id="token" value="PAIUH1">
+
+  <label>Penalti Saat Buka Tab/Aplikasi Lain (menit):</label>
+  <input type="number" id="penalti" value="5">
+
+  <button onclick="generateLink()">Hasilkan Link Ujian</button>
+
+  <div class="output">
+    <strong>Link untuk Siswa:</strong><br>
+    <input type="text" id="linkOutput" readonly>
+    <button onclick="salin()">Salin Link</button>
+  </div>
+
+  <script>
+    function generateLink() {
+      const embed = document.getElementById("embed").value;
+      const match = embed.match(/src="([^"]+)"/);
+      if (!match) {
+        alert("Embed code tidak valid!");
+        return;
+      }
+      const src = encodeURIComponent(match[1]);
+      const time = document.getElementById("time").value;
+      const token = document.getElementById("token").value;
+      const penalti = document.getElementById("penalti").value;
+      const link = `siswa.html?form=${src}&time=${time}&token=${token}&penalti=${penalti}`;
+      document.getElementById("linkOutput").value = link;
+    }
+
+    function salin() {
+      const copyText = document.getElementById("linkOutput");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("Link disalin!");
+    }
+  </script>
+</body>
+</html>
